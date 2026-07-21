@@ -187,6 +187,8 @@
     .mln-sticky-buy{ display:flex; }
     .mln-foot{ padding-bottom:104px; }         /* room for the sticky bar */
     .mln-props{ grid-template-columns:1fr; }
+    /* длинный подзаголовок — в одну строку, размер подстраивается под ширину экрана */
+    .mln-lead-heading{ white-space:nowrap; font-size:clamp(9px, calc(3.98vw - 1.9px), 15px); }
   }
 
   @media (prefers-reduced-motion:reduce){
