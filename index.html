@@ -201,6 +201,37 @@
   @media (prefers-reduced-motion:reduce){
     .mln-plus,.mln-panel,.mln-buy,.mln-social,.mln-cert-thumb,.mln-doc,.mln-sticky-buy{ transition:none !important; }
   }
+
+  /* order modal */
+  .mln-modal{ position:fixed; inset:0; z-index:100; display:none; align-items:flex-start; justify-content:center; padding:24px; background:rgba(20,20,20,0.5); overflow-y:auto; }
+  .mln-modal.open{ display:flex; }
+  .mln-modal-card{ background:#fff; width:100%; max-width:520px; margin:auto; border-radius:14px; padding:34px 30px 30px; position:relative; box-shadow:0 24px 60px rgba(0,0,0,0.25); }
+  .mln-modal-close{ position:absolute; top:14px; right:14px; width:34px; height:34px; border:none; background:transparent; cursor:pointer; font-size:24px; line-height:1; color:#9a9a9a; }
+  .mln-modal-close:hover{ color:#141414; }
+  .mln-modal-title{ font-family:'Yanone'; font-weight:400; font-size:24px; letter-spacing:0.12em; text-transform:uppercase; color:#141414; margin:0 0 8px; }
+  .mln-modal-sub{ font-size:13px; line-height:1.6; color:#8a8a8a; margin:0 0 22px; }
+  .mln-field{ margin-bottom:16px; }
+  .mln-field > label{ display:block; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#6a6a6a; margin-bottom:7px; }
+  .mln-field input, .mln-field textarea{ width:100%; box-sizing:border-box; border:1px solid #d8d8d8; border-radius:8px; padding:12px 14px; font-size:15px; font-family:inherit; color:#141414; background:#fff; }
+  .mln-field input:focus, .mln-field textarea:focus{ outline:none; border-color:#141414; }
+  .mln-field input[readonly]{ background:#f5f5f5; color:#6a6a6a; }
+  .mln-field textarea{ min-height:60px; resize:vertical; }
+  .mln-req{ color:#141414; }
+  .mln-delivery{ display:flex; flex-direction:column; gap:8px; }
+  .mln-delivery label{ display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border:1px solid #e2e2e2; border-radius:8px; cursor:pointer; font-size:14px; line-height:1.4; color:#141414; margin:0; }
+  .mln-delivery label:hover{ border-color:#bcbcbc; }
+  .mln-delivery label.sel{ border-color:#141414; background:rgba(18,92,92,0.04); }
+  .mln-delivery input[type=radio]{ width:auto; margin:2px 0 0; flex:none; accent-color:#141414; }
+  .mln-delivery .d-price{ color:#8a8a8a; }
+  .mln-error{ color:#c0392b; font-size:12.5px; line-height:1.5; margin:4px 0 12px; display:none; }
+  .mln-error.show{ display:block; }
+  .mln-submit{ width:100%; margin-top:6px; height:54px; border:none; border-radius:999px; background:#141414; color:#fff; font-size:13px; letter-spacing:0.22em; text-transform:uppercase; cursor:pointer; }
+  .mln-submit:hover{ background:#000; }
+  .mln-submit:disabled{ opacity:0.6; cursor:default; }
+  @media (max-width:600px){
+    .mln-modal{ padding:0; }
+    .mln-modal-card{ max-width:none; min-height:100%; border-radius:0; padding:26px 20px 40px; }
+  }
 </style>
 
 <div class="mln">
@@ -368,6 +399,48 @@
     <span class="mln-sticky-price">14 990 ₽</span>
     <a class="mln-sticky-btn" href="https://yookassa.ru/my/i/amCop1cWQH0o/l" target="_blank" rel="noopener">Купить</a>
   </div>
+
+  <!-- order modal -->
+  <div class="mln-modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+    <div class="mln-modal-card">
+      <button class="mln-modal-close" type="button" aria-label="Закрыть" data-close>&times;</button>
+      <h2 class="mln-modal-title" id="orderTitle">Оформление заказа</h2>
+      <p class="mln-modal-sub">Заполните форму. После оплаты мы свяжемся с вами по указанным контактам и согласуем все детали доставки.</p>
+      <form id="orderForm" novalidate>
+        <div class="mln-field">
+          <label>ФИО <span class="mln-req">*</span></label>
+          <input type="text" name="name" placeholder="Ваше ФИО" autocomplete="name">
+        </div>
+        <div class="mln-field">
+          <label>Номер телефона <span class="mln-req">*</span></label>
+          <input type="tel" name="phone" placeholder="+7 ___ ___ __ __" autocomplete="tel">
+        </div>
+        <div class="mln-field">
+          <label>Электронная почта</label>
+          <input type="email" name="email" placeholder="Ваша электронная почта" autocomplete="email">
+        </div>
+        <div class="mln-field">
+          <label>Способ доставки <span class="mln-req">*</span></label>
+          <div class="mln-delivery">
+            <label><input type="radio" name="delivery" value="СДЭК до ПВЗ — от 200 ₽"><span>СДЭК до ПВЗ <span class="d-price">— от 200 ₽</span></span></label>
+            <label><input type="radio" name="delivery" value="Курьером СДЭК до адреса — от 380 ₽"><span>Курьером СДЭК до адреса <span class="d-price">— от 380 ₽</span></span></label>
+            <label><input type="radio" name="delivery" value="Срочная по Москве и области (Яндекс Экспресс / Dostavista) — от 800 ₽"><span>Срочная по Москве и области (Яндекс Экспресс / Dostavista) <span class="d-price">— от 800 ₽</span></span></label>
+            <label><input type="radio" name="delivery" value="Самовывоз — 0 ₽"><span>Самовывоз <span class="d-price">— 0 ₽</span></span></label>
+          </div>
+        </div>
+        <div class="mln-field" id="addrField" style="display:none">
+          <label id="addrLabel">Адрес доставки <span class="mln-req">*</span></label>
+          <input type="text" name="address" placeholder="Укажите адрес">
+        </div>
+        <div class="mln-field">
+          <label>Комментарий к заказу</label>
+          <textarea name="comment" placeholder="Например, удобное время для связи"></textarea>
+        </div>
+        <div class="mln-error" id="orderError">Заполните обязательные поля: ФИО, телефон и способ доставки с адресом.</div>
+        <button type="submit" class="mln-submit" id="orderSubmit">Оплатить 14 990 ₽</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -394,6 +467,102 @@
     window.addEventListener('scroll', update, { passive:true });
     window.addEventListener('resize', update, { passive:true });
     update();
+  }
+
+  /* ---- order modal + form ---- */
+  var ORDER = {
+    payUrl:  "https://yookassa.ru/my/i/amCop1cWQH0o/l",
+    web3key: "f757f201-92ac-43af-bd19-2001c177783c",
+    tgToken: "8693171051:AAFLd_v1gGisUvxnljKpf0AMFTJdo3g9o10",
+    tgChat:  "-5550223173"
+  };
+  var PICKUP = "Самовывоз — 0 ₽";
+  var PICKUP_ADDR = "Москва, ул. Образцова, 14 (самовывоз)";
+
+  var modal = document.getElementById('orderModal');
+  var form  = document.getElementById('orderForm');
+  if(modal && form){
+    var addrField = document.getElementById('addrField');
+    var addrLabel = document.getElementById('addrLabel');
+    var addrInput = form.elements['address'];
+    var errBox    = document.getElementById('orderError');
+    var submitBtn = document.getElementById('orderSubmit');
+
+    function openModal(){ modal.classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeModal(){ modal.classList.remove('open'); document.body.style.overflow=''; }
+
+    document.querySelectorAll('a.mln-buy, a.mln-sticky-btn').forEach(function(b){
+      b.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+    });
+    modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
+    document.querySelectorAll('#orderModal [data-close]').forEach(function(x){ x.addEventListener('click', closeModal); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+    Array.prototype.forEach.call(form.querySelectorAll('input[name=delivery]'), function(r){
+      r.addEventListener('change', function(){
+        Array.prototype.forEach.call(form.querySelectorAll('.mln-delivery label'), function(l){ l.classList.remove('sel'); });
+        r.closest('label').classList.add('sel');
+        addrField.style.display = 'block';
+        if(r.value === PICKUP){
+          addrInput.value = PICKUP_ADDR; addrInput.readOnly = true;
+          addrLabel.innerHTML = 'Адрес самовывоза';
+        } else {
+          if(addrInput.readOnly){ addrInput.value = ''; }
+          addrInput.readOnly = false;
+          addrLabel.innerHTML = (r.value.indexOf('ПВЗ') > -1 ? 'Адрес ПВЗ' : 'Адрес доставки') + ' <span class="mln-req">*</span>';
+        }
+      });
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var name  = form.elements['name'].value.trim();
+      var phone = form.elements['phone'].value.trim();
+      var email = form.elements['email'].value.trim();
+      var comment = form.elements['comment'].value.trim();
+      var deliveryEl = form.querySelector('input[name=delivery]:checked');
+      var delivery = deliveryEl ? deliveryEl.value : '';
+      var address = addrInput.value.trim();
+
+      if(!name || !phone || !delivery || !address){ errBox.classList.add('show'); return; }
+      errBox.classList.remove('show');
+      submitBtn.disabled = true; submitBtn.textContent = 'Отправляем…';
+
+      var text = [
+        '🛒 Новая заявка — Меланин (14 990 ₽)',
+        'ФИО: ' + name,
+        'Телефон: ' + phone,
+        'Email: ' + (email || '—'),
+        'Доставка: ' + delivery,
+        'Адрес: ' + address,
+        'Комментарий: ' + (comment || '—')
+      ].join('\n');
+
+      // Telegram (fire-and-forget, keepalive survives navigation)
+      try {
+        fetch('https://api.telegram.org/bot' + ORDER.tgToken + '/sendMessage', {
+          method:'POST', mode:'no-cors', keepalive:true,
+          body: new URLSearchParams({ chat_id: ORDER.tgChat, text: text })
+        }).catch(function(){});
+      } catch(_){}
+
+      // Email via Web3Forms
+      var payload = {
+        access_key: ORDER.web3key,
+        subject: 'Заявка с сайта — Меланин',
+        from_name: 'vitamelanin.ru',
+        'ФИО': name, 'Телефон': phone, 'Email': email || '—',
+        'Способ доставки': delivery, 'Адрес': address, 'Комментарий': comment || '—'
+      };
+      var went = false;
+      function goPay(){ if(went) return; went = true; window.location.href = ORDER.payUrl; }
+      fetch('https://api.web3forms.com/submit', {
+        method:'POST', keepalive:true,
+        headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(){ goPay(); }).catch(function(){ goPay(); });
+      setTimeout(goPay, 3000);
+    });
   }
 })();
 </script>
